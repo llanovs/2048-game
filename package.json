@@ -5,7 +5,7 @@
   "author": "Liliia Lanovska",
   "scripts": {
     "build": "webpack",
-    "watch-ts": "watch-ts"
+    "watch-ts": "webpack --mode=development --watch"
   },
   "license": "UNLICENSED",
   "dependencies": {

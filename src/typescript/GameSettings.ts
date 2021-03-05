@@ -1,4 +1,4 @@
-import {HexagonsValueDraw} from "./HexagonsValueDraw";
+import {HexagonsDraw} from "./HexagonsDraw";
 import {GameStatus} from "./GameStatus";
 import {GameType} from "./GameType";
 
@@ -117,7 +117,7 @@ export class GameSettings {
                       dataY: number,
                       dataZ: number,
                       dataValue?: number){
-        let obj = new HexagonsValueDraw(parentDiv, dataX, dataY, dataZ).draw();
+        new HexagonsDraw(parentDiv, dataX, dataY, dataZ);
     }
 
 
@@ -141,9 +141,6 @@ export class GameSettings {
     private cleanGameArea() {
         const gameArea = document.getElementById("play_area");
         if (gameArea != null) {
-            while (gameArea.firstChild) {
-                gameArea.firstChild.remove();
-            }
             document.getElementsByTagName("body")[0].removeChild(gameArea);
         }
     }
