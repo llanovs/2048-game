@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es5",
+    "module": "commonjs",
+    "lib": [ "es2015", "dom" ],
+    "outDir": "./dist",
+    "rootDir": "./src/typescript/",
+    "strict": true,
+    "sourceMap": true,
+    "declaration": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+  },
+  "include": [
+    "./typings/index.ts",
+    "./src/typescript/*",
+  ]
+}

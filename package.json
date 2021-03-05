@@ -1,0 +1,26 @@
+{
+  "name": "typescript-bootcamp",
+  "version": "1.0.0",
+  "description": "2048 Game",
+  "author": "Liliia Lanovska",
+  "scripts": {
+    "build": "webpack",
+    "watch-ts": "watch-ts"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pixi.js": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.31",
+    "brfs": "^2.0.2",
+    "css-loader": "^5.1.1",
+    "source-map-loader": "^2.0.1",
+    "style-loader": "^2.0.0",
+    "transform-loader": "^0.2.4",
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.2.3",
+    "webpack": "^5.24.3",
+    "webpack-cli": "^4.5.0"
+  }
+}
