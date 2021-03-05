@@ -9,7 +9,8 @@
   },
   "license": "UNLICENSED",
   "dependencies": {
-    "pixi.js": "^6.0.0"
+    "pixi.js": "^6.0.0",
+    "@pixi/graphics-extras": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",

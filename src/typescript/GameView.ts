@@ -1,34 +1,73 @@
 import * as PIXI from "pixi.js";
+import { Graphics } from '@pixi/graphics';
+import '@pixi/graphics-extras';
+import '@pixi/text';
 
 export class GameView {
 
-    private app: PIXI.Application;
-    private gameArea: PIXI.Container;
-    private gameFieldDiv: any;
-    private sideLength: number;
+    private readonly app: PIXI.Application;
+    private readonly gameArea: PIXI.Container;
+    private readonly amountOfSides = 6;
+    private readonly depthOfSides = 5;
+    private hexagons: [any];
 
-    constructor(parentDiv: HTMLDivElement,
-                sideLength: number) {
+    constructor() {
 
         this.app = new PIXI.Application({
             width: 400,
             height: 420,
             backgroundColor: 0xFFFFFF
         });
-        this.sideLength = sideLength;
-        this.gameFieldDiv = parentDiv;
-        this.gameFieldDiv.appendChild(this.app.view);
+
+        this.hexagons = [PIXI.Container];
+
         this.gameArea = new PIXI.Container();
+        this.app.stage.addChild(this.gameArea);
     }
 
-    draw(){
-        //todo: create hexagon
-        const graphics = new PIXI.Graphics();
-        graphics.beginFill(0xE9E5E1);
-        graphics.drawRect(0, 0, 50, 50);
-        graphics.endFill();
+    draw(sideLength: number,
+         x: number,
+         y: number,
+         value?: number){
 
-        this.gameArea.addChild(graphics);
-        this.app.stage.addChild(this.gameArea);
+        let hexagon = new PIXI.Container();
+
+        //@ts-ignore
+        const graphics = new Graphics()
+            .lineStyle(this.depthOfSides, 0x988B80, 1)
+            .beginFill(0xFFFFFF)
+            .drawRegularPolygon(x, y, sideLength, this.amountOfSides)
+            .endFill();
+        hexagon.addChild(graphics);
+        this.putValue(x, y, value ?? 0, sideLength, hexagon);
+        this.gameArea.addChild(hexagon);
+
+        this.hexagons.push(hexagon);
+    }
+
+    putValue(x: number,
+             y: number,
+             value: number,
+             sideLength: number,
+             container: PIXI.Container){
+
+        let style = new PIXI.TextStyle(
+            {
+                fontFamily : 'Arial',
+                fontSize: sideLength - 2,
+                fill : 0x988B80,
+                align : 'center'
+            });
+
+        let text = new PIXI.Text(value.toString(), style);
+
+        text.x = x - sideLength/4;
+        text.y = y - sideLength/2;
+
+        container.addChild(text);
+    }
+
+    getPixiApp(){
+        return this.app.view;
     }
 }

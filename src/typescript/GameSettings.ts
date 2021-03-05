@@ -4,19 +4,19 @@ import {GameType} from "./GameType";
 
 export class GameSettings {
 
+    private readonly gameAreaWidth = 400;
     private readonly filledCellsOnInit = 3;
     private readonly firstType: any;
     private readonly secondType: any;
     private readonly thirdType: any;
 
-    private totalAmountOfCells: number;
-    private filledAmountOfCells: number;
+    private sideLength = 0;
+    private totalAmountOfCells = 0;
+    private filledAmountOfCells = 3;
     private gameStatus: GameStatus;
     private gameFieldDiv: any;
 
     constructor() {
-        this.totalAmountOfCells = 0;
-        this.filledAmountOfCells = 0;
         this.firstType = document.querySelector("#first_type");
         this.secondType = document.querySelector("#second_type");
         this.thirdType = document.querySelector("#third_type");
@@ -49,10 +49,10 @@ export class GameSettings {
     setupGameArea(gameType: number) {
         this.cleanGameArea();
         this.setParentDiv();
-
+        this.setSideLength(gameType);
         this.setNumberOfHexagons(gameType);
         this.drawHexagons();
-        this.putInitData();
+        this.putNewValue();
 
         GameSettings.setGameRules(this.gameFieldDiv);
         this.setGameStatus(this.gameFieldDiv);
@@ -69,6 +69,13 @@ export class GameSettings {
         this.totalAmountOfCells = amount;
     }
 
+    private setSideLength(gameType: number) {
+        let particles = gameType === 2 ? 6 :
+            gameType === 3 ? 10 : 14;
+
+        this.sideLength = this.gameAreaWidth / particles;
+    }
+
     /**
      * Draw hexagons according to totalAmountOfCells
      */
@@ -77,8 +84,16 @@ export class GameSettings {
             //todo: draw all of hexagons
         }
 
-        //todo: for test purposes
-        this.drawSingleHexagon(this.gameFieldDiv, 0,0,0);
+        //todo: delete, uses for test purposes
+        this.drawSingleHexagon(this.gameFieldDiv, 0,0,0, 0);
+    }
+
+    drawSingleHexagon(parentDiv: HTMLDivElement,
+                      dataX: number,
+                      dataY: number,
+                      dataZ: number,
+                      dataValue?: number){
+        new HexagonsDraw(parentDiv, dataX, dataY, dataZ, this.sideLength, dataValue);
     }
 
     private setParentDiv() {
@@ -112,19 +127,10 @@ export class GameSettings {
         gameFieldDiv.append(rules);
     }
 
-    drawSingleHexagon(parentDiv: HTMLDivElement,
-                      dataX: number,
-                      dataY: number,
-                      dataZ: number,
-                      dataValue?: number){
-        new HexagonsDraw(parentDiv, dataX, dataY, dataZ);
-    }
-
-
     /**
      * Put init values to hexagons
      */
-    putInitData() {
+    putNewValue() {
         for (let i = 0; i < this.filledCellsOnInit; i++) {
             //todo: implement logic part
         }

@@ -2,6 +2,8 @@ import {GameView} from "./GameView";
 
 export class HexagonsDraw {
 
+    private readonly sideLength: number;
+
     private hexagonId = 0;
     private dataX: number;
     private dataY: number;
@@ -13,27 +15,31 @@ export class HexagonsDraw {
                 dataX: number,
                 dataY: number,
                 dataZ: number,
+                sideLength: number,
                 dataValue?: number) {
         this.gameFieldDiv = parentDiv;
         this.dataX = dataX;
         this.dataY = dataY;
         this.dataZ = dataZ;
         this.dataValue = dataValue ?? 0;
+        this.sideLength = sideLength;
         this.init();
     }
 
     private init() {
-        let sideLength = 50;
-        let gameView = new GameView(this.gameFieldDiv, sideLength);
         this.setDiv();
-        gameView.draw();
+        let gameView = new GameView();
+        this.gameFieldDiv.appendChild(gameView.getPixiApp());
+
+        //todo:draw hexagons
+        gameView.draw(this.sideLength, 200,210, 2);
+        gameView.draw(this.sideLength, 300,310, 1);
     }
 
     /**
      * Create a <div> block with hexagon dynamically, with an appended <div> inside
      */
     public setDiv() {
-
         let newDiv = document.createElement('div');
         newDiv.className = 'hexagons';
         newDiv.id = this.hexagonId.toString();
@@ -44,5 +50,4 @@ export class HexagonsDraw {
         this.gameFieldDiv.appendChild(newDiv);
         this.hexagonId++;
     }
-
 }
