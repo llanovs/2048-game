@@ -31,9 +31,28 @@ export class HexagonsDraw {
         let gameView = new GameView();
         this.gameFieldDiv.appendChild(gameView.getPixiApp());
 
-        //todo:draw hexagons
-        gameView.draw(this.sideLength, 200,210, 2);
-        gameView.draw(this.sideLength, 300,310, 1);
+        //todo: create a formula to draw hexagons
+
+        //left top corner
+        gameView.draw(this.sideLength, 100,160, 2);
+
+        //right top corner
+        gameView.draw(this.sideLength, 300,160, 2);
+
+        //top
+        gameView.draw(this.sideLength, 200,100, 1);
+
+        //bottom
+        gameView.draw(this.sideLength, 200,330, 1);
+
+        //right bottom corner
+        gameView.draw(this.sideLength, 300,270, 1);
+
+        //left bottom corner
+        gameView.draw(this.sideLength, 100,270, 1);
+
+        //center
+        gameView.draw(this.sideLength, 200,215, 2);
     }
 
     /**
