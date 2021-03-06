@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import { Graphics } from '@pixi/graphics';
 import '@pixi/graphics-extras';
 import '@pixi/text';
+import { HexagonData } from "./HexagonData";
 
 export class GameView {
 
@@ -9,7 +10,8 @@ export class GameView {
     private readonly gameArea: PIXI.Container;
     private readonly amountOfSides = 6;
     private readonly depthOfSides = 5;
-    private hexagons: [any];
+
+    private text!: PIXI.Text;
 
     constructor() {
 
@@ -19,55 +21,54 @@ export class GameView {
             backgroundColor: 0xFFFFFF
         });
 
-        this.hexagons = [PIXI.Container];
-
         this.gameArea = new PIXI.Container();
         this.app.stage.addChild(this.gameArea);
     }
 
-    draw(sideLength: number,
-         x: number,
-         y: number,
-         value?: number){
-
-        let hexagon = new PIXI.Container();
+    draw(hexagonData: HexagonData): Graphics {
+        let hexagonContainer = new PIXI.Container();
 
         //@ts-ignore
-        let graphics = new Graphics()
+        let hexagon = new Graphics()
             .lineStyle(this.depthOfSides, 0x988B80, 1)
             .beginFill(0xFFFFFF)
-            .drawRegularPolygon(x, y, sideLength, this.amountOfSides, 0.525)
+            .drawRegularPolygon(hexagonData.x, hexagonData.y,
+                hexagonData.sideLength, this.amountOfSides, 0.525)
             .endFill();
-        hexagon.addChild(graphics);
-        this.putValue(x, y, value ?? 0, sideLength, hexagon);
-        this.gameArea.addChild(hexagon);
+        hexagonContainer.addChild(hexagon);
+        this.putValue(hexagonData, hexagonContainer);
+        this.gameArea.addChild(hexagonContainer);
 
-        this.hexagons.push(hexagon);
+        return hexagon;
     }
 
-    putValue(x: number,
-             y: number,
-             value: number,
-             sideLength: number,
-             container: PIXI.Container){
+    putValue(hexagonData: HexagonData,
+             container: PIXI.Container) {
 
         let style = new PIXI.TextStyle(
             {
-                fontFamily : 'Arial',
-                fontSize: sideLength - 2,
-                fill : 0x988B80,
-                align : 'center'
+                fontFamily: 'Arial',
+                fontSize: hexagonData.sideLength - 2,
+                fill: 0x988B80,
+                align: 'center'
             });
 
-        let text = new PIXI.Text(value.toString(), style);
+        this.text = new PIXI.Text(hexagonData.value === 0 ?
+            "" : hexagonData.value.toString(), style);
 
-        text.x = x - sideLength/4;
-        text.y = y - sideLength/2;
+        this.text.x = hexagonData.x - hexagonData.sideLength / 4;
+        this.text.y = hexagonData.y - hexagonData.sideLength / 2;
 
-        container.addChild(text);
+        container.addChild(this.text);
     }
 
-    getPixiApp(){
+    getPixiApp() {
         return this.app.view;
+    }
+
+    public updateValue(newValue: number) {
+        this.text.text = newValue.toString();
+        //todo: fix text scale
+        this.text.x -= newValue > 9 ? 10 : 0;
     }
 }
