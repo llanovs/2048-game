@@ -33,10 +33,10 @@ export class GameView {
         let hexagon = new PIXI.Container();
 
         //@ts-ignore
-        const graphics = new Graphics()
+        let graphics = new Graphics()
             .lineStyle(this.depthOfSides, 0x988B80, 1)
             .beginFill(0xFFFFFF)
-            .drawRegularPolygon(x, y, sideLength, this.amountOfSides)
+            .drawRegularPolygon(x, y, sideLength, this.amountOfSides, 0.525)
             .endFill();
         hexagon.addChild(graphics);
         this.putValue(x, y, value ?? 0, sideLength, hexagon);
