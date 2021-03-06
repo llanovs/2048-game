@@ -8,8 +8,8 @@ export class GameView {
 
     private readonly app: PIXI.Application;
     private readonly gameArea: PIXI.Container;
-    private readonly amountOfSides = 6;
     private readonly depthOfSides = 5;
+    private readonly angle = 0.525;
 
     private text!: PIXI.Text;
 
@@ -32,8 +32,11 @@ export class GameView {
         let hexagon = new Graphics()
             .lineStyle(this.depthOfSides, 0x988B80, 1)
             .beginFill(0xFFFFFF)
-            .drawRegularPolygon(hexagonData.x, hexagonData.y,
-                hexagonData.sideLength, this.amountOfSides, 0.525)
+            .drawRegularPolygon(hexagonData.x,
+                                hexagonData.y,
+                                hexagonData.sideLength,
+                                hexagonData.amountOfSides,
+                                this.angle)
             .endFill();
         hexagonContainer.addChild(hexagon);
         this.putValue(hexagonData, hexagonContainer);
@@ -53,8 +56,7 @@ export class GameView {
                 align: 'center'
             });
 
-        this.text = new PIXI.Text(hexagonData.value === 0 ?
-            "" : hexagonData.value.toString(), style);
+        this.text = new PIXI.Text(hexagonData.stringValue(), style);
 
         this.text.x = hexagonData.x - hexagonData.sideLength / 4;
         this.text.y = hexagonData.y - hexagonData.sideLength / 2;
@@ -70,5 +72,10 @@ export class GameView {
         this.text.text = newValue.toString();
         //todo: fix text scale
         this.text.x -= newValue > 9 ? 10 : 0;
+        this.updateColor(newValue);
+    }
+
+    private updateColor(newValue: number) {
+        //todo: implement text color logic
     }
 }

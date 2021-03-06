@@ -1,37 +1,40 @@
 export class HexagonCell{
 
-    private readonly _id: number;
-    private readonly _dataX: number;
-    private readonly _dataY: number;
-    private readonly _dataZ: number;
+    private readonly id: number;
+    private readonly dataX: number;
+    private readonly dataY: number;
+    private readonly dataZ: number;
 
-    dataValue: number;
+    private dataValue: number;
 
     constructor(id: number,
                 dataX: number,
                 dataY: number,
                 dataZ: number,
                 dataValue: number) {
-        this._id = id;
-        this._dataX = dataX;
-        this._dataY = dataY;
-        this._dataZ = dataZ;
+        this.id = id;
+        this.dataX = dataX;
+        this.dataY = dataY;
+        this.dataZ = dataZ;
         this.dataValue = dataValue;
     }
 
-    get dataX(): number {
-        return this._dataX;
+    public setDiv() {
+        let newDiv = document.createElement('div');
+        newDiv.className = 'hexagons';
+        newDiv.id = 'hexagon' + this.id;
+        newDiv.setAttribute("data-value", this.dataValue.toString());
+        newDiv.setAttribute("data-x", this.dataX.toString());
+        newDiv.setAttribute("data-y", this.dataY.toString());
+        newDiv.setAttribute("data-z", this.dataZ.toString());
+       return newDiv;
     }
 
-    get dataY(): number {
-        return this._dataY;
-    }
-
-    get dataZ(): number {
-        return this._dataZ;
-    }
-
-    get id(): number {
-        return this._id;
+    public updatedDiv(newValue: number) {
+        this.dataValue = newValue;
+        let newDiv = document.getElementById('hexagon' + this.id)
+        if (newDiv !== undefined && newDiv !== null){
+            newDiv.setAttribute("data-value", newValue.toString());
+        }
     }
 }

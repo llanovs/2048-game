@@ -1,9 +1,11 @@
 export class HexagonData {
 
+    private readonly _amountOfSides = 6;
     private readonly _sideLength: number;
     private readonly _x: number;
     private readonly _y: number;
-    public value: number;
+    private _color = 0x988B80;
+    private _value: number;
 
     constructor(sideLength: number,
                 x: number,
@@ -12,9 +14,8 @@ export class HexagonData {
         this._sideLength = sideLength;
         this._x = x;
         this._y = y;
-        this.value = value;
+        this._value = value;
     }
-
 
     get sideLength(): number {
         return this._sideLength;
@@ -26,5 +27,25 @@ export class HexagonData {
 
     get y(): number {
         return this._y;
+    }
+
+    stringValue(): string {
+        return this._value === 0 ? "" : this._value.toString();
+    }
+
+    set value(value: number) {
+        this._value = value;
+    }
+
+    get amountOfSides(): number {
+        return this._amountOfSides;
+    }
+
+    get color(): number {
+        return this._color;
+    }
+
+    set color(value: number) {
+        this._color = value;
     }
 }
