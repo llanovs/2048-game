@@ -1,18 +1,19 @@
 import {DrawHexagon} from "./DrawHexagon";
-import {GameStatus} from "./GameStatus";
-import {GameType} from "./GameType";
-import {HexagonCell} from "./HexagonCell";
-import {HexagonData} from "./HexagonData";
-import {GameMoves} from "./GameMoves";
+import {GameStatus} from "./enums/GameStatus";
+import {GameType} from "./enums/GameType";
+import {HexagonCell} from "./entities/HexagonCell";
+import {HexagonData} from "./entities/HexagonData";
+import {GameMoves} from "./enums/GameMoves";
 import {GameView} from "./GameView";
+import {GameRequest} from "./serverCommunication/GameRequest";
+import {GameState} from "./serverCommunication/GameState";
 
 export class GameSettings {
 
-    private gameType!: number;
+    private readonly gameView: GameView;
     private readonly gameAreaWidth = 400;
-    private readonly x = 200;
-    private readonly y = 215;
-    private readonly filledCellsOnInit = 3;
+    private readonly centerX = 200;
+    private readonly centerY = 215;
     private readonly firstType: any;
     private readonly secondType: any;
     private readonly thirdType: any;
@@ -20,10 +21,10 @@ export class GameSettings {
     private totalAmountOfCells = 0;
     private filledAmountOfCells = 3;
     private gameStatus: GameStatus;
-    private readonly gameView: GameView;
     private gameFieldDiv!: HTMLDivElement;
     private hexagons : Map<HexagonCell, HexagonData>;
     private draw!: DrawHexagon;
+    private gameState!: GameState;
 
     constructor() {
         this.firstType = document.querySelector("#first_type");
@@ -32,6 +33,7 @@ export class GameSettings {
         this.gameStatus = GameStatus.PLAYING;
         this.hexagons = new Map<HexagonCell, HexagonData>();
         this.gameView = new GameView();
+        this.gameState = new GameState();
     }
 
     /**
@@ -67,14 +69,14 @@ export class GameSettings {
      * Setup game area and create hexagons
      * @param gameType
      */
-    setupGameArea(gameType: number) {
-        this.gameType = gameType;
+    async setupGameArea(gameType: number) {
+        this.filledAmountOfCells = 3;
         this.cleanGameArea();
         this.setParentDiv();
         this.setNumberOfHexagons(gameType);
-        this.drawHexagons();
-
-        GameSettings.setGameRules(this.gameFieldDiv);
+        await this.getInitValues(gameType)
+        this.drawHexagons(gameType, this.gameState.currentGameState);
+        this.setGameRules(this.gameFieldDiv);
         this.setGameStatus(this.gameFieldDiv);
     }
 
@@ -101,54 +103,77 @@ export class GameSettings {
         return this.gameAreaWidth / particles;
     }
 
+    async getInitValues(gameType: number) : Promise<JSON> {
+        let request = new GameRequest(gameType);
+        let response = await request.sendInitRequest();
+        // @ts-ignore
+        return this.gameState.setCurrentGameState(response.response);
+    }
+
     /**
      * Draw hexagons according to totalAmountOfCells
      */
-    drawHexagons(){
-        //todo: create a formula to draw hexagons
-
+    drawHexagons(gameType: number, response: JSON){
+        let x, y, z, value;
         let id = 0;
+        for(let i = 0; i < this.filledAmountOfCells; i++){
+            // @ts-ignore
+            this.x = response[i].x;
+            // @ts-ignore
+            this.y = response[i].y;
+            // @ts-ignore
+            this.z = response[i].z;
+            // @ts-ignore
+            this.value = response[i].value;
+
+
+        }
+
+        //todo: create a formula to draw hexagons
+        debugger
+
 
         //left top corner
-        this.createHexagon(id++, -1, 1, 0, 1, -100, -55);
+        this.createHexagon(gameType, id++, -1, 1, 0, 1, -100, -55);
 
         //right top corner
-        this.createHexagon(id++,1, 0, -1, 2, 100, -55);
+        this.createHexagon(gameType, id++,1, 0, -1, 2, 100, -55);
 
         //top
-        this.createHexagon(id++,0, 1, -1, 2, 0, -115);
+        this.createHexagon(gameType, id++,0, 1, -1, 2, 0, -115);
 
         //bottom
-        this.createHexagon(id++,0, -1, 1, 2, 0, 115);
+        this.createHexagon(gameType, id++,0, -1, 1, 2, 0, 115);
 
         //right bottom corner
-        this.createHexagon(id++,1, -1, 0, 2, 100, 55);
+        this.createHexagon(gameType, id++,1, -1, 0, 2, 100, 55);
 
         //left bottom corner
-        this.createHexagon(id++,-1, 0, 1, 2, -100, 55);
+        this.createHexagon(gameType, id++,-1, 0, 1, 2, -100, 55);
 
         //center
-        this.createHexagon(id++,0, 0, 0, 2, 0, 0);
+        this.createHexagon(gameType, id++,0, 0, 0, 2, 0, 0);
     }
 
-    private createHexagon(id: number,
+    private createHexagon(gameType: number,
+                          id: number,
                           dataX: number,
                           dataY: number,
                           dataZ: number,
                           dataValue: number,
                           deltaX: number,
                           deltaY: number) {
-        let sideLength = this.setSideLength(this.gameType);
+        let sideLength = this.setSideLength(gameType);
         let leftTopCell = new HexagonCell(id, dataX, dataY, dataZ, dataValue);
-        let leftTopHexagonData = new HexagonData(sideLength, this.x + deltaX, this.y + deltaY, dataValue);
+        let leftTopHexagonData = new HexagonData(sideLength, this.centerX + deltaX, this.centerY + deltaY, dataValue);
         this.hexagons.set(leftTopCell, leftTopHexagonData);
         this.draw = new DrawHexagon(this.gameView, leftTopCell, leftTopHexagonData, this.gameFieldDiv);
     }
 
     private setParentDiv() {
-        let gameFieldDiv = document.createElement('div');
-        gameFieldDiv.id = 'play_area';
-        gameFieldDiv.className = 'play_area';
+        let gameFieldDiv = document.createElement("div");
+        gameFieldDiv.id = "play_area";
+        gameFieldDiv.className = "play_area";
         gameFieldDiv.setAttribute("height", "420px");
         gameFieldDiv.setAttribute("width", "400px");
         gameFieldDiv.setAttribute("position", "relative");
@@ -158,19 +183,20 @@ export class GameSettings {
     }
 
     private setGameStatus(gameFieldDiv: HTMLDivElement) {
-        let gameStatus = document.createElement('div');
+        let gameStatus = document.createElement("div");
         gameStatus.className = "selection_area";
-
-        let currentGameStatus = document.createElement('span');
-        gameStatus.setAttribute("data-status", this.gameStatus.toString());
-        gameStatus.innerHTML = "Game Status: " + this.gameStatus.toString();
+        gameStatus.innerHTML = "Game Status: "
+        let currentGameStatus = document.createElement("span");
+        currentGameStatus.id = "data-status";
+        currentGameStatus.setAttribute("data-status", this.gameStatus.toString());
+        currentGameStatus.innerHTML = this.gameStatus.toString();
         gameStatus.append(currentGameStatus);
 
         gameFieldDiv.append(gameStatus);
     }
 
-    private static setGameRules(gameFieldDiv: HTMLDivElement) {
-        let rules = document.createElement('p');
+    private setGameRules(gameFieldDiv: HTMLDivElement) {
+        let rules = document.createElement("p");
         rules.setAttribute("font-style", "italic");
         rules.innerHTML = "Use Q, W, E, A, S, D keys for move";
         gameFieldDiv.append(rules);
@@ -188,7 +214,13 @@ export class GameSettings {
      */
     private changeGameStatus() {
         //todo: implement logic part
-
+        if(this.filledAmountOfCells === this.totalAmountOfCells){
+            let gameStatus = document.getElementById("data-status");
+            if (gameStatus !== undefined && gameStatus !== null){
+                this.gameStatus = GameStatus.GAME_OVER;
+                gameStatus.setAttribute("data-status", this.gameStatus.toString());
+            }
+        }
     }
 
     private cleanGameArea() {

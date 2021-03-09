@@ -1,6 +1,6 @@
 import {GameView} from "./GameView";
-import {HexagonCell} from "./HexagonCell";
-import {HexagonData} from "./HexagonData";
+import {HexagonCell} from "./entities/HexagonCell";
+import {HexagonData} from "./entities/HexagonData";
 import {Graphics} from '@pixi/graphics';
 import '@pixi/graphics-extras';
 
@@ -20,7 +20,9 @@ export class DrawHexagon {
         this.gameView = gameView;
         this.cell = cell;
         this.gameFieldDiv = gameFieldDiv;
-        this.gameFieldDiv.appendChild(this.cell.setDiv());
+
+        let newDiv = this.cell.setDiv();
+        this.gameFieldDiv.appendChild(newDiv);
         this.gameFieldDiv.appendChild(this.gameView.getPixiApp());
         this.hexagon = this.gameView.draw(hexagonData);
     }

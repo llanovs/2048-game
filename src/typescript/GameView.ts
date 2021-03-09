@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { Graphics } from '@pixi/graphics';
 import '@pixi/graphics-extras';
 import '@pixi/text';
-import { HexagonData } from "./HexagonData";
+import { HexagonData } from "./entities/HexagonData";
 
 export class GameView {
 
@@ -25,7 +25,7 @@ export class GameView {
         this.app.stage.addChild(this.gameArea);
     }
 
-    draw(hexagonData: HexagonData): Graphics {
+    draw(hexagonData: HexagonData) {
         let hexagonContainer = new PIXI.Container();
 
         //@ts-ignore
@@ -38,6 +38,7 @@ export class GameView {
                                 hexagonData.amountOfSides,
                                 this.angle)
             .endFill();
+        this.updateColor(hexagon);
         hexagonContainer.addChild(hexagon);
         this.putValue(hexagonData, hexagonContainer);
         this.gameArea.addChild(hexagonContainer);
@@ -46,7 +47,7 @@ export class GameView {
     }
 
     putValue(hexagonData: HexagonData,
-             container: PIXI.Container) {
+             hexagonContainer: PIXI.Container) {
 
         let style = new PIXI.TextStyle(
             {
@@ -60,8 +61,7 @@ export class GameView {
 
         this.text.x = hexagonData.x - hexagonData.sideLength / 4;
         this.text.y = hexagonData.y - hexagonData.sideLength / 2;
-
-        container.addChild(this.text);
+        hexagonContainer.addChild(this.text);
     }
 
     getPixiApp() {
@@ -72,10 +72,9 @@ export class GameView {
         this.text.text = newValue.toString();
         //todo: fix text scale
         this.text.x -= newValue > 9 ? 10 : 0;
-        this.updateColor(newValue);
     }
 
-    private updateColor(newValue: number) {
+    private updateColor(hexagon: any) {
         //todo: implement text color logic
     }
 }

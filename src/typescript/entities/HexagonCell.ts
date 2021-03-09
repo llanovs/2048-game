@@ -20,9 +20,9 @@ export class HexagonCell{
     }
 
     public setDiv() {
-        let newDiv = document.createElement('div');
-        newDiv.className = 'hexagons';
-        newDiv.id = 'hexagon' + this.id;
+        let newDiv = document.createElement("div");
+        newDiv.className = "hexagons";
+        newDiv.id = "hexagon" + this.id;
         newDiv.setAttribute("data-value", this.dataValue.toString());
         newDiv.setAttribute("data-x", this.dataX.toString());
         newDiv.setAttribute("data-y", this.dataY.toString());
@@ -32,7 +32,7 @@ export class HexagonCell{
 
     public updatedDiv(newValue: number) {
         this.dataValue = newValue;
-        let newDiv = document.getElementById('hexagon' + this.id)
+        let newDiv = document.getElementById("hexagon" + this.id)
         if (newDiv !== undefined && newDiv !== null){
             newDiv.setAttribute("data-value", newValue.toString());
         }
