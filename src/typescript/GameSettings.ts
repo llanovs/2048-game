@@ -96,14 +96,14 @@ export class GameSettings {
         this.totalAmountOfCells = amount;
     }
 
-    private setSideLength(gameType: number) : number{
+    private setSideLength(gameType: number): number{
         let particles = gameType === 2 ? 6 :
             gameType === 3 ? 10 : 14;
 
         return this.gameAreaWidth / particles;
     }
 
-    async getInitValues(gameType: number) : Promise<JSON> {
+    async getInitValues(gameType: number): Promise<JSON> {
         let request = new GameRequest(gameType);
         let response = await request.sendInitRequest();
         // @ts-ignore
@@ -114,45 +114,33 @@ export class GameSettings {
      * Draw hexagons according to totalAmountOfCells
      */
     drawHexagons(gameType: number, response: JSON){
-        let x, y, z, value;
         let id = 0;
-        for(let i = 0; i < this.filledAmountOfCells; i++){
-            // @ts-ignore
-            this.x = response[i].x;
-            // @ts-ignore
-            this.y = response[i].y;
-            // @ts-ignore
-            this.z = response[i].z;
-            // @ts-ignore
-            this.value = response[i].value;
 
+        let deltaX = -100;
+        let amount = gameType - 1;
+        let row = gameType;
 
+        for (let x = -amount; x < gameType; x++) {
+            let y = x <= 0 ? amount : 0;
+            let z = x < 0 ? 0 : -amount;
+
+            //todo: investigate formula
+            let deltaY = x === 0 ? -115 : -60;
+
+            for (let i = 0; i < row; i++) {
+                console.log(`{${x};${y};${z}}`);
+                let value = this.hasInitValue(x, y, z, response);
+
+                // @ts-ignore
+                this.createHexagon(gameType, id++, x, y, z,
+                    value !== -1 ? value : 0, deltaX, deltaY);
+                deltaY += 110;
+                y--;
+                z++;
+            }
+            deltaX += 106;
+            row += x < 0 ? 1 : -1;
         }
-
-        //todo: create a formula to draw hexagons
-        debugger
-
-
-        //left top corner
-        this.createHexagon(gameType, id++, -1, 1, 0, 1, -100, -55);
-
-        //right top corner
-        this.createHexagon(gameType, id++,1, 0, -1, 2, 100, -55);
-
-        //top
-        this.createHexagon(gameType, id++,0, 1, -1, 2, 0, -115);
-
-        //bottom
-        this.createHexagon(gameType, id++,0, -1, 1, 2, 0, 115);
-
-        //right bottom corner
-        this.createHexagon(gameType, id++,1, -1, 0, 2, 100, 55);
-
-        //left bottom corner
-        this.createHexagon(gameType, id++,-1, 0, 1, 2, -100, 55);
-
-        //center
-        this.createHexagon(gameType, id++,0, 0, 0, 2, 0, 0);
     }
 
     private createHexagon(gameType: number,
@@ -168,6 +156,23 @@ export class GameSettings {
         let leftTopHexagonData = new HexagonData(sideLength, this.centerX + deltaX, this.centerY + deltaY, dataValue);
         this.hexagons.set(leftTopCell, leftTopHexagonData);
         this.draw = new DrawHexagon(this.gameView, leftTopCell, leftTopHexagonData, this.gameFieldDiv);
+    }
+
+    private hasInitValue(x: number,
+                         y: number,
+                         z: number,
+                         response: JSON): number {
+
+
+        // @ts-ignore
+        for (let i = 0; i < response.length; i++) {
+            // @ts-ignore
+            if (response[i].x === x && response[i].y === y && response[i].z === z) {
+                // @ts-ignore
+                return response[0].value;
+            }
+        }
+        return -1;
     }
 
     private setParentDiv() {
@@ -213,7 +218,7 @@ export class GameSettings {
      * When there's no moves it means that game over so the status was changed
      */
     private changeGameStatus() {
-        //todo: implement logic part
+        //todo: check that
         if(this.filledAmountOfCells === this.totalAmountOfCells){
             let gameStatus = document.getElementById("data-status");
             if (gameStatus !== undefined && gameStatus !== null){
